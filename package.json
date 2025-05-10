@@ -1,0 +1,20 @@
+{
+  "name": "weather_assist",
+  "version": "0.1",
+  "description": "The weather assistent for my frends",
+  "main": "index.js",
+  "repository": "w",
+  "author": "MEP_TAPKOBA",
+  "license": "MIT",
+  "scripts": {
+    "dev" : "nodemon index.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "mongoose": "^8.14.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
