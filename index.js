@@ -84,6 +84,7 @@ async function main() {
         }
         const oldPass = user.password
         user.password = newPass
+        user.save()
         console.log(`Пользователь ${user.userName} сменил пароль`)
         console.log(`Старый пароль : [${oldPass}], новый пароль : [${newPass}]`)
         res.status(200).json({message: "Пароль сменен успешно"})
