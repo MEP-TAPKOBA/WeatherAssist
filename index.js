@@ -4,6 +4,9 @@ const { model, Schema } = require('mongoose')
 const UserData = require('./models/user.model.js')
 require('dotenv').config()
 const app = express()
+const { UserServices }  = require('./src/services/UserServices.js')
+
+const DBCORE = new UserServices()
 
 const PORT = process.env.PORT || 5000
 const DBUSER = process.env.DBUSER
@@ -53,15 +56,16 @@ async function main() {
     // запрос на удаление юзера с помощью query
     app.delete('/user/delete', async (req, res) =>{
         const { userName, password } = req.query
-        const user = await UserData.findOne({userName})
-        console.log(`Попытка удалить пользователя ${userName}`)
-        if (!user){
-            console.log(`Такого пользователя в системе не оказалось 0_0`)
-            return res.status(404).json({message: "Такого пользователя нет в системе"})
-        }
-        if (user.password !== password){
-            return res.status(400).json({message: "Неправильный пароль"})
-        }
+        const user = DBCORE.login(userName, password)
+        // const user = await UserData.findOne({userName})
+        // console.log(`Попытка удалить пользователя ${userName}`)
+        // if (!user){
+        //     console.log(`Такого пользователя в системе не оказалось 0_0`)
+        //     return res.status(404).json({message: "Такого пользователя нет в системе"})
+        // }
+        // if (user.password !== password){
+        //     return res.status(400).json({message: "Неправильный пароль"})
+        // }
         const result = await UserData.findByIdAndDelete(user._id); // поиск по id в mongoDB
         if (!result) {
             return res.status(404).json({ message: 'Произошла неизвестная ошибка' });
