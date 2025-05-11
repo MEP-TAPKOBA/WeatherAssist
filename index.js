@@ -40,58 +40,21 @@ async function main() {
     // делаем запрос для создания юзера, входные данные { "userName": "value", "password": "value", "city": "value"}
     app.post('/signup', async (req, res) => {
         let data = req?.body
-        data.userName = format(data.userName) // вызываем функцию format(), что бы  привести значение ключа userName в нужный вид(удалить все пробелы и сделать все символы маленькими)
-        const user = await UserData.findOne({ userName: data.userName })
-        if (user) {
-            return res.status(400).json({ message: `Пользователь с ником ${user.userName} уже есть в системе` })
-        }
-        const saveUser = new UserData(data)
-        console.log(`Новый пользователь:`)
-        console.table(data)
-        console.log(`Сохранение пользователя ${data.userName} в базу...`)
-        await saveUser.save()
-        console.log(`Пользователь ${data.userName} добавлен в базу`)
-        res.status(200).json({ message: `Пользователь ${data.userName} добавлен в базу :-)` })
+        data.userName = format(data.userName)
+        const [status, message] = await DBCORE.addUser(data) 
+        res.status(status).json({message})
     })
     // запрос на удаление юзера с помощью query
     app.delete('/user/delete', async (req, res) =>{
         const { userName, password } = req.query
-        const user = DBCORE.login(userName, password)
-        // const user = await UserData.findOne({userName})
-        // console.log(`Попытка удалить пользователя ${userName}`)
-        // if (!user){
-        //     console.log(`Такого пользователя в системе не оказалось 0_0`)
-        //     return res.status(404).json({message: "Такого пользователя нет в системе"})
-        // }
-        // if (user.password !== password){
-        //     return res.status(400).json({message: "Неправильный пароль"})
-        // }
-        const result = await UserData.findByIdAndDelete(user._id); // поиск по id в mongoDB
-        if (!result) {
-            return res.status(404).json({ message: 'Произошла неизвестная ошибка' });
-        }
-        console.log(`Пользователь ${user.userName} удален`)
-        res.status(200).json({message: `Пользователь ${user.userName} удален из базы данных! :-)`})
+        const [status, message] = await DBCORE.deleteUser(userName, password)
+        res.status(status).json({message})
     })
     // запрос на смену пароля у юзера
     app.patch('/user/update/password', async (req, res) =>{
         const { userName, password, newPass } = req.query
-        const user = await UserData.findOne({userName})
-        console.log(`Запрос на смену пароля от пользователя ${userName}`)
-        if (!user){
-            console.log(`Такого пользователя в системе не оказалось 0_0`)
-            return res.status(404).json({message: "Такого пользователя нет в системе"})
-        }
-        if (user.password !== password){
-            console.log(`Был введен неверный пароль`)
-            return res.status(400).json({message: "Неправильный пароль"})
-        }
-        const oldPass = user.password
-        user.password = newPass
-        user.save()
-        console.log(`Пользователь ${user.userName} сменил пароль`)
-        console.log(`Старый пароль : [${oldPass}], новый пароль : [${newPass}]`)
-        res.status(200).json({message: "Пароль сменен успешно"})
+        const [status, message] = await DBCORE.changePassword(userName, password, newPass)
+        res.status(status).json({message})
     })
     //---------------------------------------------- последняя строчка функции - запуск сервера ----------------------------------------------------
     app.listen(PORT, () => {
