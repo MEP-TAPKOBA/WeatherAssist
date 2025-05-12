@@ -1,0 +1,34 @@
+{
+    "userNotFound": {
+        "status": 404,
+        "message": "Неправильное имя пользователя"
+    },
+    "incorrectPassword": {
+        "status": 400,
+        "message": "Неправильный пароль"
+    },
+    "internalServerError": {
+        "status": 500,
+        "message": "Произошла неизвестная ошибка на стороне сервера"
+    },
+    "deleteSuccess": {
+        "status": 200,
+        "message": "Пользователь успешно удален"
+    },
+    "allreadyUserName": {
+        "status": 400,
+        "message": "Такое имя пользователя уже зарегистрировано"
+    },
+    "userSaveSuccess": {
+        "status": 200,
+        "message": "Пользователь успешно создан"
+    },
+    "changePasswordSuccess": {
+        "status": 200,
+        "message": "Пароль успешно сменен"
+    },
+    "changeCitySuccess": {
+        "status": 200,
+        "message": "Город успешно заменен"
+    }
+}

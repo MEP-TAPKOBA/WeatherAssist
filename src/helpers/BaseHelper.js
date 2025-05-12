@@ -6,7 +6,7 @@ class BaseHelper {
         const userName = str.replace(/[\s\n\r]+/g, '')
         return userName.toLowerCase()
     }
-    
+
 }
 
 module.exports = { BaseHelper }

@@ -11,7 +11,7 @@
  * @param {DateFormatOptions} [options={ type: 'full' }] Параметры
  * @returns {String}
  */
-function getDate(options) {
+function getDate(options = {}) {
 	if (!options.type) options.type = 'full';
 	const { day, month, month_name, year, hours, minutes, seconds, unix } = _getDate(options);
 

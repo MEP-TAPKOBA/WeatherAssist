@@ -1,20 +1,13 @@
 const { Router } = require('express')
-const express = require('express')
 
-const { BaseHelper } = require('../helpers/BaseHelper.js')
-const { UserServices } = require('../services/UserServices.js')
-
+const { UserController } = require('../controllers/UserController.js')
 
 const router = Router()
-const Helper = new BaseHelper
-const DBCORE = new UserServices()
-
-
-
-router.delete('/delete', async (req, res) => {
-    const { userName, password } = req.query
-    const [status, message] = await DBCORE.deleteUser(userName, password)
-    res.status(status).json({ message })
-})
+const userController = new UserController()
+// ----------------------------------------------------------------------------------------
+router.post('/signup', userController.addUser)
+router.patch('/update/city', userController.changeCity)
+router.patch('/update/password', userController.changePassword)
+router.delete('/delete', userController.deleteUser)
 
 module.exports = router
