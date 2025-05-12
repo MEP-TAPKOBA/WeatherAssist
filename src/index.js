@@ -8,7 +8,7 @@ const getDate = require('./utilts/getDate.js')
 const { BaseHelper } = require('./helpers/BaseHelper.js')
 const { UserServices } = require('./services/UserServices.js')
 
-// const UserRouter = require('./routes/user.js') //////////////////
+const UserRouter = require('./routes/user.js') //////////////////
 
 const Helper = new BaseHelper
 const DBCORE = new UserServices()
@@ -31,7 +31,7 @@ async function conn() {
 async function main() {
     await conn()
     app.use(express.json())
-    // app.use(UserRouter) ////////////////////
+    app.use('/user', UserRouter) 
     //делаем вызов метода GET что бы увидеть работоспособность сервера
     app.get('/', (req, res) => {
         res.status(200).json({ message: `--- ✔ Сервер запущен ✔ [${getDate({type:"full"})}]  ---` })
@@ -41,12 +41,6 @@ async function main() {
         let data = req?.body
         data.userName = Helper.format(data.userName)
         const [status, message] = await DBCORE.addUser(data)
-        res.status(status).json({ message })
-    })
-    // запрос на удаление юзера с помощью query
-    app.delete('/user/delete', async (req, res) => {
-        const { userName, password } = req.query
-        const [status, message] = await DBCORE.deleteUser(userName, password)
         res.status(status).json({ message })
     })
     // запрос на смену пароля у юзера

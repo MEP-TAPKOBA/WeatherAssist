@@ -71,5 +71,4 @@ function _getDate(options) {
 		unix: date.getTime()
 	}
 }
-getDate({type: "full"})
 module.exports = getDate
