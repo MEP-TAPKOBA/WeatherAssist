@@ -1,9 +1,11 @@
 const mongoose = require('mongoose')
 const { model , Schema } = require('mongoose')
-const UserData = require('../../models/user.model.js')
+const UserData = require('../models/user.model.js')
 const express = require('express')
 const app = express()
 app.use(express.json())
+const getDate = require('../utilts/getDate.js')
+
 
 const CODES = {
     userNotFound: {status: 404, message: `Неправильное имя пользователя`},
@@ -18,33 +20,33 @@ const CODES = {
 class UserServices {
     async login(userName, password) {
         // Описываю логи, что бы было проще дебажить, потом удалю //
-        console.log(`--- Попытка входа в аккаунт [${userName}] ---`) 
+        console.log(`--- [${getDate({type:"full"})}] --- Попытка входа в аккаунт [${userName}] ---`) 
         const user = await UserData.findOne({userName})
         if(!user) {
-            console.log(` ✖ Пользователь не найден ✖ `)
+            console.log(`--- [${getDate({type:"full"})}] --- ✖ Пользователь не найден ✖ ---`)
             return Object.values(CODES.userNotFound)
         }
         if (user.password !== password){
-            console.log(` ✖ Неправильный пароль ✖ `)
+            console.log(`--- [${getDate({type:"full"})}] --- ✖ Неправильный пароль ✖ ---`)
             return Object.values(CODES.incorrectPassword)
         }
-        console.log(` ✔ Успешный вход ✔ `)
+        console.log(`--- [${getDate({type:"full"})}] --- ✔ Успешный вход ✔ ---`)
         return user
     }
     async addUser(dto){ // dto - Data Transfer Object
-        console.log(`--- Попытка создания нового пользователя [${dto.userName}] ---`)
+        console.log(`\n--- [${getDate({type:"full"})}] --- Попытка создания нового пользователя [${dto.userName}] ---`)
         const userHasInBase = await UserData.findOne({userName: dto.userName})
         if (userHasInBase){
-            console.log(` ✖ Такой пользователь уже есть в системе ✖ `)
+            console.log(`--- [${getDate({type:"full"})}] --- ✖ Такой пользователь уже есть в системе ✖ ---`)
             return Object.values(CODES.allreadyUserName)
         }
         const user = new UserData(dto)
         await user.save()
-        console.log(` ✔ Пользователь успешно создан ✔ `)
+        console.log(`--- [${getDate({type:"full"})}] --- ✔ Пользователь успешно создан ✔ ---`)
         return Object.values(CODES.userSaveSuccess)      
     }
     async changePassword(userName, password, newPassword) {
-        console.log(`--- Запрос на смену пароля ---`)
+        console.log(`\n--- [${getDate({type:"full"})}] --- Запрос на смену пароля ---`)
         const user = await this.login(userName, password)
         if (Array.isArray(user)){
             return user
@@ -52,13 +54,13 @@ class UserServices {
         const oldPassword = user.password
         user.password = newPassword
         await user.save()
-        console.log(` ✔ Пароль успешно заменен ✔`)
-        console.log(`--- Старый пароль [${oldPassword}] --- Новый пароль [${newPassword}] ---`)
+        console.log(`--- [${getDate({type:"full"})}] --- ✔ Пароль успешно заменен ✔ ---`)
+        console.log(`--- [${getDate({type:"full"})}] --- Старый пароль [${oldPassword}] --- Новый пароль [${newPassword}] ---`)
         return Object.values(CODES.changePasswordSuccess)
 
     }   
     async deleteUser(userName, password) {
-        console.log(`--- Запрос на удаление пользователя ---`)
+        console.log(`\n--- [${getDate({type:"full"})}] --- Запрос на удаление пользователя ---`)
         const user = await this.login(userName, password)
         if (Array.isArray(user)){
             return user
@@ -67,7 +69,7 @@ class UserServices {
         if (!result){
             return Object.values(CODES.internalServerError)
         }
-        console.log(` ✔ Пользователь удален ✔ `)
+        console.log(`--- [${getDate({type:"full"})}] --- ✔ Пользователь удален ✔ ---`)
         return Object.values(CODES.deleteSuccess)
     }
 }
