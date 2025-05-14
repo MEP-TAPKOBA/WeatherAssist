@@ -7,6 +7,7 @@ const app = express()
 app.use(express.json())
 
 class UserService {
+    constructor() { }
     async login(userName, password) {
         // Описываю логи, что бы было проще дебажить, потом удалю //
         console.log(`--- [${getDate()}] --- Попытка входа в аккаунт [${userName}] ---`)
@@ -76,4 +77,4 @@ class UserService {
     }
 }
 
-module.exports = { UserService }
+module.exports = UserService 

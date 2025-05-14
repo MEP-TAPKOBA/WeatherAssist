@@ -1,12 +1,12 @@
-class BaseHelper {
-    sleep(ms) {
+class Helper {
+    static sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
-    format(str) {
+    static format(str) {
         const userName = str.replace(/[\s\n\r]+/g, '')
         return userName.toLowerCase()
     }
 
 }
 
-module.exports = { BaseHelper }
+module.exports = Helper 

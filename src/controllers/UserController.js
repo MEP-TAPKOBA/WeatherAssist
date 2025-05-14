@@ -1,8 +1,7 @@
-const { UserService } = require('../services/UserService.js')
-const { BaseHelper } = require('../helpers/BaseHelper.js')
+const UserService = require('../services/UserService.js')
+const Helper = require('../helpers/Helper.js')
 
 const userService = new UserService()
-const Helper = new BaseHelper()
 
 class UserController {
     async addUser(req, res) {
@@ -28,4 +27,4 @@ class UserController {
     }
 
 }
-module.exports = { UserController }
+module.exports = UserController 

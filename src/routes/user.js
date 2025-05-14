@@ -1,6 +1,6 @@
 const { Router } = require('express')
 
-const { UserController } = require('../controllers/UserController.js')
+const UserController = require('../controllers/UserController.js')
 
 const router = Router()
 const userController = new UserController()
