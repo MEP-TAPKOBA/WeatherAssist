@@ -1,11 +1,13 @@
-const Weather = require('../services/Weather.js')
+const WeatherService = require('../services/WeatherService.js')
 const getDate = require('../utilts/getDate.js')
+
+const weatherService = new WeatherService()
 
 class WeatherController { 
     async getWeather(req, res) {
-        const { userName, password } = req.query
-        const [status, city,response] = await Weather.get(userName, password)
-        const weather = {city,time:getDate(), response}
+        const { login, password } = req.query
+        const [status, city,response] = await weatherService.get(login, password)
+        const weather = {city,request_time:getDate(), response}
         res.status(status).json({weather})
     }
 }
