@@ -1,26 +1,11 @@
-const UserService = require('./UserService.js')
-const axios = require('axios')
 const CODES = require('../json/codes.json')
+const WttrApiService = require('../services/Api/WttrApiService.js')
 
 class WeatherService {
-    constructor() {
-        this.userService = new UserService
+    constructor(userService) {
+        this.userService = userService
     }
-    async getJson(city = 'Слов`янськ') {
-        try {
-            const url = `https://wttr.in/${city}?format=j1`
-            const headers = {
-                'accept-language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
-                'accept': 'application/json, text/plain, */*'
-            };
-
-            return axios.get(url, { headers }).then(res => res.data);
-        } catch (error) {
-            console.error('Error fetching weather data:', error)
-            return null
-        }
-    }
-    getArray(json) {
+    toFormat(json) {
         const result = []
         for (const unit of json.weather[0].hourly) {
             const timeStr = String(unit.time).padStart(4, "0"); //} 
@@ -60,10 +45,10 @@ class WeatherService {
         if (Array.isArray(user)) {
             return user
         }
-        const jsonRes = await this.getJson(user.city)
+        const jsonRes = await WttrApiService.getWeatherByQuery(user.city)
         if (!jsonRes)
             return Object.values(CODES.internalServerError)
-        const weatherToday = this.getArray(jsonRes)
+        const weatherToday = this.toFormat(jsonRes)
         const area = ['country', 'region', 'areaName'].map(key => jsonRes.nearest_area[0][key][0].value).join(', ');
         return [200, area, weatherToday]
     }

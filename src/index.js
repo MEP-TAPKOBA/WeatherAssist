@@ -4,7 +4,7 @@ const express = require('express')
 const getDate = require('./utilts/getDate.js') // модуль получения даты
 const UserRouter = require('./routes/user.js')
 const WeatherRouter = require('./routes/weather.js')
-const  Database  = require('./database/Database.js')
+const Database = require('./database/Database.js')
 
 const PORT = process.env.PORT || 5000
 const app = express()

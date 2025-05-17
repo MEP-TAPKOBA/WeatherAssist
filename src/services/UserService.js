@@ -3,10 +3,8 @@ const CODES = require('../json/codes.json')
 const getDate = require('../utilts/getDate.js')
 
 class UserService {
-    constructor() {}
     async login(login, password) {
         if (!login) return [400, `Не указано имя пользователя`]
-        // Описываю логи, что бы было проще дебажить, потом удалю //
         console.log(`--- [${getDate()}] --- Попытка входа в аккаунт [${login}] ---`)
         const user = await UserData.findOne({ login: login })
         if (!user) {
@@ -20,7 +18,7 @@ class UserService {
         console.log(`--- [${getDate()}] --- ✔ Успешный вход ✔ ---`)
         return user
     }
-    async addUser(dto) { // dto - Data Transfer Object
+    async create(dto) { // dto - Data Transfer Object
         console.log(`\n--- [${getDate()}] --- Попытка создания нового пользователя [${dto.login}] ---`)
         const userHasInBase = await UserData.findOne({ login: dto.login })
         if (userHasInBase) {
@@ -59,7 +57,7 @@ class UserService {
         console.log(`--- [${getDate()}] --- Старый город [${firstCity}] --- Новый город [${newCity}] ---`)
         return Object.values(CODES.changeCitySuccess)
     }
-    async deleteUser(login, password) {
+    async delete(login, password) {
         console.log(`\n--- [${getDate()}] --- Запрос на удаление пользователя ---`)
         const user = await this.login(login, password)
         if (Array.isArray(user)) {
@@ -75,4 +73,4 @@ class UserService {
     }
 }
 
-module.exports = UserService 
+module.exports = UserService
