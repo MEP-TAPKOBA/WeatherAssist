@@ -5,8 +5,8 @@ class WeatherController {
         this.weatherService = weatherService
     }
     async getWeather(req, res) {
-        const { login, password } = req.query
-        const [status, city,response] = await this.weatherService.get(login, password)
+        const  token  = req.query
+        const [status, city, response] = await this.weatherService.get(token)
         const weather = {city,request_time:getDate(), response}
         res.status(status).json({weather})
     }

@@ -16,13 +16,18 @@ class UserController {
         res.status(status).json({ message })
     }
     async changePassword(req, res) {
-        const {  login, password, newPassword } = req.query
+        const { login, password, newPassword } = req.query
         const [status, message] = await this.userService.changePassword(login, password, newPassword)
         res.status(status).json({ message })
     }
     async delete(req, res) {
         const { login, password } = req.query
         const [status, message] = await this.userService.delete(login, password)
+        res.status(status).json({ message })
+    }
+    async login(req, res) {
+        const { login, password} = req.query
+        const [status, message] = await this.userService.login(login, password)
         res.status(status).json({ message })
     }
 

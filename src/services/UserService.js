@@ -3,7 +3,10 @@ const CODES = require('../json/codes.json')
 const getDate = require('../utilts/getDate.js')
 
 class UserService {
-    async login(login, password) {
+    constructor(JWT){
+        this.JWT = JWT
+    }
+    async check(login, password) {
         if (!login) return [400, `Не указано имя пользователя`]
         console.log(`--- [${getDate()}] --- Попытка входа в аккаунт [${login}] ---`)
         const user = await UserData.findOne({ login: login })
@@ -16,6 +19,24 @@ class UserService {
             return Object.values(CODES.incorrectPassword)
         }
         console.log(`--- [${getDate()}] --- ✔ Успешный вход ✔ ---`)
+        return user
+    }
+    async login(login, password){
+        const user = await this.check(login, password)
+        if (Array.isArray(user)){
+            return user
+        }
+        console.log(user.login)
+        console.log(`--- [${getDate()}] --- ✔ Генерация токена ✔ ---`)
+        const token = this.JWT.generateToken(user.login)
+        return [200, {token:token}]
+    }
+    async authFromJWT(token){
+        const login = this.JWT.getLoginFromToken(token.token)
+        if (!login) {
+            return [400, [`Токен недействителен`]]
+        }
+        const user = await UserData.findOne({login: login})
         return user
     }
     async create(dto) { // dto - Data Transfer Object
@@ -32,7 +53,7 @@ class UserService {
     }
     async changePassword(login, password, newPassword) {
         console.log(`\n--- [${getDate()}] --- Запрос на смену пароля ---`)
-        const user = await this.login(login, password)
+        const user = await this.check(login, password)
         if (Array.isArray(user)) {
             return user
         }
@@ -46,7 +67,7 @@ class UserService {
     }
     async changeCity(login, password, newCity) {
         console.log(`\n--- [${getDate()}] --- Запрос на смену города ---`)
-        const user = await this.login(login, password)
+        const user = await this.check(login, password)
         if (Array.isArray(user)) {
             return user
         }
@@ -59,7 +80,7 @@ class UserService {
     }
     async delete(login, password) {
         console.log(`\n--- [${getDate()}] --- Запрос на удаление пользователя ---`)
-        const user = await this.login(login, password)
+        const user = await this.check(login, password)
         if (Array.isArray(user)) {
             console.log(`Произошла ошибка :DDD`)
             return user

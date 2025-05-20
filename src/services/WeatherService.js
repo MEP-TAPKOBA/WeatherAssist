@@ -40,8 +40,8 @@ class WeatherService {
         result.push(lastBlock)
         return result
     }
-    async get(userName, password) {
-        const user = await this.userService.login(userName, password)
+    async get(token) {
+        const user = await this.userService.authFromJWT(token)
         if (Array.isArray(user)) {
             return user
         }
