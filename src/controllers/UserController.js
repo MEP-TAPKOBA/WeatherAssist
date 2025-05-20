@@ -1,30 +1,35 @@
-const UserService = require('../services/UserService.js')
 const Helper = require('../helpers/Helper.js')
 
-const userService = new UserService()
-
 class UserController {
-    async addUser(req, res) {
+    constructor(userService){
+        this.userService = userService
+    }
+    async create(req, res) {
         let data = req?.body
-        data.userName = Helper.format(data.userName)
-        const [status, message] = await userService.addUser(data)
+        data.login = Helper.format(data.login)
+        const [status, message] = await this.userService.create(data)
         res.status(status).json({ message })
     }
     async changeCity(req, res) {
-        const { userName, password, newCity } = req.query
-        const [status, message] = await userService.changeCity(userName, password, newCity)
+        const { login, password, newCity } = req.query
+        const [status, message] = await this.userService.changeCity(login, password, newCity)
         res.status(status).json({ message })
     }
     async changePassword(req, res) {
-        const { userName, password, newPassword } = req.query
-        const [status, message] = await userService.changePassword(userName, password, newPassword)
+        const { login, password, newPassword } = req.query
+        const [status, message] = await this.userService.changePassword(login, password, newPassword)
         res.status(status).json({ message })
     }
-    async deleteUser(req, res) {
-        const { userName, password } = req.query
-        const [status, message] = await userService.deleteUser(userName, password)
+    async delete(req, res) {
+        const { login, password } = req.query
+        const [status, message] = await this.userService.delete(login, password)
+        res.status(status).json({ message })
+    }
+    async login(req, res) {
+        const { login, password} = req.query
+        const [status, message] = await this.userService.login(login, password)
         res.status(status).json({ message })
     }
 
 }
-module.exports = UserController 
+module.exports = UserController

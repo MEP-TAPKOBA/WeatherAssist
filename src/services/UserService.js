@@ -1,17 +1,15 @@
 const UserData = require('../models/user.model.js')
 const CODES = require('../json/codes.json')
 const getDate = require('../utilts/getDate.js')
-const express = require('express')
-
-const app = express()
-app.use(express.json())
 
 class UserService {
-    constructor() { }
-    async login(userName, password) {
-        // Описываю логи, что бы было проще дебажить, потом удалю //
-        console.log(`--- [${getDate()}] --- Попытка входа в аккаунт [${userName}] ---`)
-        const user = await UserData.findOne({ userName })
+    constructor(JWT){
+        this.JWT = JWT
+    }
+    async check(login, password) {
+        if (!login) return [400, `Не указано имя пользователя`]
+        console.log(`--- [${getDate()}] --- Попытка входа в аккаунт [${login}] ---`)
+        const user = await UserData.findOne({ login: login })
         if (!user) {
             console.log(`--- [${getDate()}] --- ✖ Пользователь не найден ✖ ---`)
             return Object.values(CODES.userNotFound)
@@ -23,9 +21,27 @@ class UserService {
         console.log(`--- [${getDate()}] --- ✔ Успешный вход ✔ ---`)
         return user
     }
-    async addUser(dto) { // dto - Data Transfer Object
-        console.log(`\n--- [${getDate()}] --- Попытка создания нового пользователя [${dto.userName}] ---`)
-        const userHasInBase = await UserData.findOne({ userName: dto.userName })
+    async login(login, password){
+        const user = await this.check(login, password)
+        if (Array.isArray(user)){
+            return user
+        }
+        console.log(user.login)
+        console.log(`--- [${getDate()}] --- ✔ Генерация токена ✔ ---`)
+        const token = this.JWT.generateToken(user.login)
+        return [200, {token:token}]
+    }
+    async authFromJWT(token){
+        const login = this.JWT.getLoginFromToken(token.token)
+        if (!login) {
+            return [400, [`Токен недействителен`]]
+        }
+        const user = await UserData.findOne({login: login})
+        return user
+    }
+    async create(dto) { // dto - Data Transfer Object
+        console.log(`\n--- [${getDate()}] --- Попытка создания нового пользователя [${dto.login}] ---`)
+        const userHasInBase = await UserData.findOne({ login: dto.login })
         if (userHasInBase) {
             console.log(`--- [${getDate()}] --- ✖ Такой пользователь уже есть в системе ✖ ---`)
             return Object.values(CODES.allreadyUserName)
@@ -35,9 +51,9 @@ class UserService {
         console.log(`--- [${getDate()}] --- ✔ Пользователь успешно создан ✔ ---`)
         return Object.values(CODES.userSaveSuccess)
     }
-    async changePassword(userName, password, newPassword) {
+    async changePassword(login, password, newPassword) {
         console.log(`\n--- [${getDate()}] --- Запрос на смену пароля ---`)
-        const user = await this.login(userName, password)
+        const user = await this.check(login, password)
         if (Array.isArray(user)) {
             return user
         }
@@ -49,9 +65,9 @@ class UserService {
         return Object.values(CODES.changePasswordSuccess)
 
     }
-    async changeCity(userName, password, newCity) {
+    async changeCity(login, password, newCity) {
         console.log(`\n--- [${getDate()}] --- Запрос на смену города ---`)
-        const user = await this.login(userName, password)
+        const user = await this.check(login, password)
         if (Array.isArray(user)) {
             return user
         }
@@ -62,10 +78,11 @@ class UserService {
         console.log(`--- [${getDate()}] --- Старый город [${firstCity}] --- Новый город [${newCity}] ---`)
         return Object.values(CODES.changeCitySuccess)
     }
-    async deleteUser(userName, password) {
+    async delete(login, password) {
         console.log(`\n--- [${getDate()}] --- Запрос на удаление пользователя ---`)
-        const user = await this.login(userName, password)
+        const user = await this.check(login, password)
         if (Array.isArray(user)) {
+            console.log(`Произошла ошибка :DDD`)
             return user
         }
         const result = await UserData.findByIdAndDelete(user._id)
@@ -77,4 +94,4 @@ class UserService {
     }
 }
 
-module.exports = UserService 
+module.exports = UserService
